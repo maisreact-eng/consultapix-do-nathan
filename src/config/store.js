@@ -8,7 +8,7 @@ const defaults = {
   apiKey: '',
   asaas: { apiKey: '', sandbox: true },
   efi: { clientId: '', clientSecret: '', sandbox: true },
-  woovi: { appId: '' },
+  woovi: { appId: '', sandbox: true },
 };
 
 function load() {

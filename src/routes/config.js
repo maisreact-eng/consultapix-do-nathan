@@ -10,7 +10,7 @@ router.get('/config', (req, res) => {
     apiKey: cfg.apiKey || '',
     asaas: { apiKey: cfg.asaas.apiKey, sandbox: cfg.asaas.sandbox },
     efi: { clientId: cfg.efi.clientId, clientSecret: cfg.efi.clientSecret, sandbox: cfg.efi.sandbox },
-    woovi: { appId: cfg.woovi?.appId || '' },
+    woovi: { appId: cfg.woovi?.appId || '', sandbox: cfg.woovi?.sandbox !== false },
   });
 });
 

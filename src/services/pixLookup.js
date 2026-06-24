@@ -55,8 +55,12 @@ async function lookupEfi(key, cfg) {
 }
 
 async function lookupWoovi(key, cfg) {
+  const base = cfg.sandbox
+    ? 'https://api.woovi-sandbox.com'
+    : 'https://api.woovi.com';
+
   const res = await axios.get(
-    `https://api.woovi.com/api/v1/pix-keys/${encodeURIComponent(key)}/check`,
+    `${base}/api/v1/pix-keys/${encodeURIComponent(key)}/check`,
     { headers: { Authorization: cfg.appId } }
   );
 

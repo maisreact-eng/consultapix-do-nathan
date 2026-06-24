@@ -155,6 +155,7 @@ function applyConfig(cfg) {
   document.getElementById('efiClientSecret').value = cfg.efi?.clientSecret || '';
   document.getElementById('efiSandbox').checked = cfg.efi?.sandbox !== false;
   document.getElementById('wooviAppId').value = cfg.woovi?.appId || '';
+  document.getElementById('wooviSandbox').checked = cfg.woovi?.sandbox !== false;
   document.getElementById('apiKeyField').value = cfg.apiKey || '';
 }
 
@@ -188,6 +189,7 @@ btnSave.addEventListener('click', async () => {
     },
     woovi: {
       appId: document.getElementById('wooviAppId').value.trim(),
+      sandbox: document.getElementById('wooviSandbox').checked,
     },
   };
 
