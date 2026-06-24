@@ -134,7 +134,3 @@ Crie conta em efipay.com.br, vá em API → Criar Aplicação e copie o Client I
 ## Tecnologias
 
 Node.js com Express, CORS habilitado, HTML/CSS/JS puro no frontend
-
-## Feito por
-
-[mcsapo](https://github.com/mcsapo)
