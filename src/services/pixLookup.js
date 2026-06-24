@@ -54,19 +54,45 @@ async function lookupEfi(key, cfg) {
   };
 }
 
-async function lookupWoovi(key, cfg) {
-  const res = await axios.get(`https://api.openpix.com.br/api/v1/pixkey/${encodeURIComponent(key)}`, {
-    headers: { Authorization: cfg.appId },
-  });
+// O App ID do Woovi é o Client_Id:Client_Secret do Efí Pay em Base64.
+// Woovi usa a infraestrutura do Efí Pay por baixo.
+let wooviToken = null;
+let wooviTokenExpires = 0;
 
-  const d = res.data?.pixKey || res.data;
+async function getWooviToken(appId) {
+  if (wooviToken && Date.now() < wooviTokenExpires) return wooviToken;
+
+  // Decodifica o App ID para extrair clientId e clientSecret
+  const decoded = Buffer.from(appId, 'base64').toString('utf-8');
+  const [clientId, clientSecret] = decoded.split(':');
+
+  const creds = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+  const res = await axios.post(
+    'https://pix.api.efipay.com.br/oauth/token',
+    { grant_type: 'client_credentials' },
+    { headers: { Authorization: `Basic ${creds}`, 'Content-Type': 'application/json' } }
+  );
+
+  wooviToken = res.data.access_token;
+  wooviTokenExpires = Date.now() + (res.data.expires_in - 60) * 1000;
+  return wooviToken;
+}
+
+async function lookupWoovi(key, cfg) {
+  const token = await getWooviToken(cfg.appId);
+  const res = await axios.get(`https://pix.api.efipay.com.br/v2/pix/entries/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const d = res.data;
   return {
     found: true,
     bank: {
-      name: d.bankName || d.bank?.name || null,
-      ispb: d.ispb || d.bank?.ispb || null,
+      name: d.account?.participant || null,
+      ispb: d.account?.ispb || null,
+      branch: d.account?.branch || null,
+      accountType: d.account?.accountType || null,
     },
-    holder: { name: d.name || d.holderName || null },
+    holder: { name: d.owner?.name || null, type: d.owner?.type || null },
   };
 }
 
