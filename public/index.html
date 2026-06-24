@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIXCheck — Validador de Chaves PIX</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M7 7L3 12l4 5M17 7l4 5-4 5M14 4l-4 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      PIX<strong>Check</strong>
+    </div>
+    <button class="btn-icon" id="btnSettings" title="Configurações">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      Configurações
+    </button>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>Consultar Chave PIX</h1>
+      <p>Valide qualquer chave e descubra o banco vinculado</p>
+    </div>
+
+    <div class="search-box">
+      <div class="input-wrap">
+        <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+          <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input
+          type="text"
+          id="pixInput"
+          placeholder="CPF, CNPJ, e-mail, telefone (+5511...) ou chave aleatória"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button class="btn-clear" id="btnClear" title="Limpar">✕</button>
+      </div>
+      <button class="btn-primary" id="btnSearch">
+        <span id="btnText">Consultar</span>
+        <span id="btnSpinner" class="spinner" style="display:none"></span>
+      </button>
+    </div>
+
+    <div class="tags">
+      <span class="tag-label">Tipo:</span>
+      <button class="tag" data-example="email">E-mail</button>
+      <button class="tag" data-example="phone">Telefone</button>
+      <button class="tag" data-example="cpf">CPF</button>
+      <button class="tag" data-example="cnpj">CNPJ</button>
+      <button class="tag" data-example="evp">Aleatória</button>
+    </div>
+
+    <div id="result"></div>
+  </main>
+
+  <!-- Modal de Configurações -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>Configurações</h2>
+        <button class="btn-icon small" id="btnCloseModal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <label class="field-label">Provedor de consulta PIX</label>
+        <div class="provider-tabs" id="providerTabs">
+          <button class="ptab active" data-p="asaas">Asaas</button>
+          <button class="ptab" data-p="efi">Efí Pay</button>
+          <button class="ptab" data-p="none">Sem consulta</button>
+        </div>
+
+        <!-- Asaas -->
+        <div id="panel-asaas" class="panel">
+          <p class="hint">
+            Crie conta grátis em <strong>asaas.com</strong> → Configurações → Integrações → API Key
+          </p>
+          <label class="field-label">API Key</label>
+          <input type="text" id="asaasKey" placeholder="$aact_YTU5YTE...">
+          <label class="check-label">
+            <input type="checkbox" id="asaasSandbox">
+            Sandbox <span class="hint-inline">(ambiente de testes — desmarque em produção)</span>
+          </label>
+        </div>
+
+        <!-- Efí Pay -->
+        <div id="panel-efi" class="panel" style="display:none">
+          <p class="hint">
+            Crie conta em <strong>efipay.com.br</strong> → API → Criar Aplicação → copie Client ID e Secret
+          </p>
+          <label class="field-label">Client ID</label>
+          <input type="text" id="efiClientId" placeholder="Client_Id_...">
+          <label class="field-label">Client Secret</label>
+          <input type="password" id="efiClientSecret" placeholder="Client_Secret_...">
+          <label class="check-label">
+            <input type="checkbox" id="efiSandbox">
+            Sandbox <span class="hint-inline">(ambiente de testes)</span>
+          </label>
+        </div>
+
+        <!-- Nenhum -->
+        <div id="panel-none" class="panel" style="display:none">
+          <p class="hint">Apenas valida o formato da chave localmente, sem consultar o banco.</p>
+        </div>
+
+        <button class="btn-primary full" id="btnSave">Salvar configurações</button>
+        <p class="save-msg" id="saveMsg"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
