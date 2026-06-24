@@ -87,6 +87,7 @@
         <div class="provider-tabs" id="providerTabs">
           <button class="ptab active" data-p="asaas">Asaas</button>
           <button class="ptab" data-p="efi">Efí Pay</button>
+          <button class="ptab" data-p="woovi">Woovi</button>
           <button class="ptab" data-p="none">Sem consulta</button>
         </div>
 
@@ -116,6 +117,15 @@
             <input type="checkbox" id="efiSandbox">
             Sandbox <span class="hint-inline">(ambiente de testes)</span>
           </label>
+        </div>
+
+        <!-- Woovi -->
+        <div id="panel-woovi" class="panel" style="display:none">
+          <p class="hint">
+            No painel da <strong>Woovi</strong> vá em API/Plugins → crie uma aplicação → copie o <strong>App ID</strong>
+          </p>
+          <label class="field-label">App ID</label>
+          <input type="text" id="wooviAppId" placeholder="Q29tcGFueS...">
         </div>
 
         <!-- Nenhum -->

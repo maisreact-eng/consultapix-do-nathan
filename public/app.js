@@ -154,6 +154,7 @@ function applyConfig(cfg) {
   document.getElementById('efiClientId').value = cfg.efi?.clientId || '';
   document.getElementById('efiClientSecret').value = cfg.efi?.clientSecret || '';
   document.getElementById('efiSandbox').checked = cfg.efi?.sandbox !== false;
+  document.getElementById('wooviAppId').value = cfg.woovi?.appId || '';
   document.getElementById('apiKeyField').value = cfg.apiKey || '';
 }
 
@@ -166,8 +167,9 @@ document.getElementById('providerTabs').addEventListener('click', e => {
 function setProvider(p) {
   document.querySelectorAll('.ptab').forEach(t => t.classList.toggle('active', t.dataset.p === p));
   document.getElementById('panel-asaas').style.display = p === 'asaas' ? '' : 'none';
-  document.getElementById('panel-efi').style.display  = p === 'efi'   ? '' : 'none';
-  document.getElementById('panel-none').style.display = p === 'none'  ? '' : 'none';
+  document.getElementById('panel-efi').style.display   = p === 'efi'   ? '' : 'none';
+  document.getElementById('panel-woovi').style.display = p === 'woovi' ? '' : 'none';
+  document.getElementById('panel-none').style.display  = p === 'none'  ? '' : 'none';
 }
 
 btnSave.addEventListener('click', async () => {
@@ -183,6 +185,9 @@ btnSave.addEventListener('click', async () => {
       clientId: document.getElementById('efiClientId').value.trim(),
       clientSecret: document.getElementById('efiClientSecret').value.trim(),
       sandbox: document.getElementById('efiSandbox').checked,
+    },
+    woovi: {
+      appId: document.getElementById('wooviAppId').value.trim(),
     },
   };
 

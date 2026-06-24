@@ -54,8 +54,24 @@ async function lookupEfi(key, cfg) {
   };
 }
 
+async function lookupWoovi(key, cfg) {
+  const res = await axios.get(`https://api.openpix.com.br/api/v1/pixkey/${encodeURIComponent(key)}`, {
+    headers: { Authorization: cfg.appId },
+  });
+
+  const d = res.data?.pixKey || res.data;
+  return {
+    found: true,
+    bank: {
+      name: d.bankName || d.bank?.name || null,
+      ispb: d.ispb || d.bank?.ispb || null,
+    },
+    holder: { name: d.name || d.holderName || null },
+  };
+}
+
 async function lookup(key, config) {
-  const { provider, asaas, efi } = config;
+  const { provider, asaas, efi, woovi } = config;
 
   if (provider === 'none') {
     return { found: null, bank: null, holder: null, message: 'Nenhum provedor configurado. Configure nas ⚙ Configurações.' };
@@ -63,7 +79,8 @@ async function lookup(key, config) {
 
   try {
     if (provider === 'asaas') return await lookupAsaas(key, asaas);
-    if (provider === 'efi') return await lookupEfi(key, efi);
+    if (provider === 'efi')   return await lookupEfi(key, efi);
+    if (provider === 'woovi') return await lookupWoovi(key, woovi);
   } catch (err) {
     if (err.response?.status === 404) {
       return { found: false, bank: null, holder: null, message: 'Chave PIX não cadastrada no DICT.' };
