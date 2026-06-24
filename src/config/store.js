@@ -5,6 +5,7 @@ const CONFIG_FILE = path.join(__dirname, '../../config.json');
 
 const defaults = {
   provider: 'none',
+  apiKey: '',
   asaas: { apiKey: '', sandbox: true },
   efi: { clientId: '', clientSecret: '', sandbox: true },
 };

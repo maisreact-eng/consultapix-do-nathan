@@ -154,6 +154,7 @@ function applyConfig(cfg) {
   document.getElementById('efiClientId').value = cfg.efi?.clientId || '';
   document.getElementById('efiClientSecret').value = cfg.efi?.clientSecret || '';
   document.getElementById('efiSandbox').checked = cfg.efi?.sandbox !== false;
+  document.getElementById('apiKeyField').value = cfg.apiKey || '';
 }
 
 // Provider tabs
@@ -173,6 +174,7 @@ btnSave.addEventListener('click', async () => {
   const provider = document.querySelector('.ptab.active')?.dataset.p || 'none';
   const body = {
     provider,
+    apiKey: document.getElementById('apiKeyField').value.trim(),
     asaas: {
       apiKey: document.getElementById('asaasKey').value.trim(),
       sandbox: document.getElementById('asaasSandbox').checked,

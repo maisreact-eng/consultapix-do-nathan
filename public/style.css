@@ -50,6 +50,12 @@ header {
 }
 .logo strong { font-weight: 700; }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .btn-icon {
   display: flex;
   align-items: center;
@@ -313,6 +319,12 @@ main {
   padding: 10px 12px;
   margin-top: 12px;
   line-height: 1.5;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0 4px;
 }
 
 .save-msg {

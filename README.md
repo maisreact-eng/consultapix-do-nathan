@@ -1,51 +1,113 @@
 # PIXCheck
 
-Validador de chaves PIX com interface web local. Cole qualquer tipo de chave (CPF, CNPJ, e-mail, telefone ou chave aleatória) e veja instantaneamente se ela é válida e qual banco está vinculado.
+Validador de chaves PIX com interface web local e API REST para automações. Cole qualquer tipo de chave (CPF, CNPJ, e-mail, telefone ou chave aleatória) e veja se ela é válida e qual banco está vinculado.
 
 ## Funcionalidades
 
-Validação de formato de todos os tipos de chave PIX com algoritmo correto (CPF e CNPJ com dígitos verificadores)
+Validação local de formato com algoritmo completo para CPF e CNPJ
 
-Consulta real no DICT do BACEN via Asaas ou Efí Pay para descobrir o banco e o titular
+Consulta real no DICT do BACEN via Asaas ou Efí Pay para ver o banco e o titular
 
-Interface web limpa que abre automaticamente no navegador ao iniciar
+Interface web que abre automaticamente no navegador ao iniciar
 
-Configuração de provedor direto pelo painel, sem precisar editar arquivos
+API REST com CORS que funciona para scripts, n8n, Make, Zapier e qualquer automação
+
+API key opcional — se configurada, protege o acesso ao endpoint
 
 ## Requisitos
 
 Node.js 18 ou superior
 
-## Instalação
+## Instalação e uso
 
 ```bash
-git clone https://github.com/seu-usuario/pixcheck.git
-cd pixcheck
+git clone https://github.com/maisreact-eng/consultapix-do-nathan.git
+cd consultapix-do-nathan
 npm install
 npm start
 ```
 
-O navegador abre automaticamente em `http://localhost:3333`
+O navegador abre sozinho em `http://localhost:3333`
 
-## Configuração do provedor PIX
+## Documentação da API
 
-Sem um provedor configurado, a ferramenta ainda valida o formato de qualquer chave. Para ver o banco e o titular, configure um dos provedores abaixo clicando em **Configurações** na interface.
+A API fica disponível em `http://localhost:3333/api` enquanto o servidor estiver rodando. Acesse esse endereço no navegador para ver a documentação completa em JSON.
 
-### Asaas (recomendado — mais fácil)
+### Validar chave PIX via GET
 
-1. Crie conta grátis em asaas.com (aceita CPF, não precisa de CNPJ)
-2. Vá em Configurações → Integrações → API Key
-3. Copie a chave que começa com `$aact_...`
-4. Na interface, clique em Configurações → selecione Asaas → cole a chave → Salvar
+```
+GET http://localhost:3333/api/pix?key=<chave>
+```
 
-Para testes use o Sandbox marcado. Para consultas reais desmarque o Sandbox.
+Exemplo com curl:
 
-### Efí Pay (Gerencianet)
+```bash
+curl "http://localhost:3333/api/pix?key=contato@exemplo.com"
+```
 
-1. Crie conta em efipay.com.br
-2. Vá em API → Criar Aplicação
-3. Copie o Client ID e o Client Secret
-4. Na interface, clique em Configurações → selecione Efí Pay → preencha os campos → Salvar
+### Validar chave PIX via POST
+
+```
+POST http://localhost:3333/api/pix
+Content-Type: application/json
+
+{ "key": "contato@exemplo.com" }
+```
+
+### Resposta
+
+```json
+{
+  "valid": true,
+  "type": "EMAIL",
+  "key": "contato@exemplo.com",
+  "found": true,
+  "bank": {
+    "name": "Banco Inter",
+    "ispb": "00416968"
+  },
+  "holder": {
+    "name": "João Silva"
+  },
+  "message": null
+}
+```
+
+Campos da resposta:
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| valid | boolean | Se o formato é válido |
+| type | string | CPF, CNPJ, EMAIL, PHONE ou EVP |
+| key | string | Chave normalizada |
+| found | boolean ou null | Se está cadastrada no DICT. null quando sem provedor |
+| bank | objeto ou null | Nome e ISPB do banco |
+| holder | objeto ou null | Nome do titular |
+| message | string ou null | Aviso quando não há provedor configurado |
+
+### Autenticação por API key
+
+Se você configurar uma API key nas Configurações da interface, toda requisição precisa enviá-la:
+
+Via header:
+
+```bash
+curl -H "X-Api-Key: sua_chave" "http://localhost:3333/api/pix?key=contato@exemplo.com"
+```
+
+Via query:
+
+```bash
+curl "http://localhost:3333/api/pix?key=contato@exemplo.com&api_key=sua_chave"
+```
+
+### Uso no n8n
+
+Adicione um nó HTTP Request com:
+- Method: GET
+- URL: `http://localhost:3333/api/pix`
+- Query Parameter: `key` = valor da chave PIX
+- Header: `X-Api-Key` = sua chave (se configurada)
 
 ## Tipos de chave suportados
 
@@ -55,11 +117,23 @@ Para testes use o Sandbox marcado. Para consultas reais desmarque o Sandbox.
 | CNPJ | 11.222.333/0001-81 |
 | E-mail | contato@exemplo.com |
 | Telefone | +5511999887766 |
-| Chave aleatória (EVP) | a4e1b1a7-3c2f-4b7e-... |
+| Chave aleatória (EVP) | a4e1b1a7-3c2f-4b7e-9f0d-... |
+
+## Configurando o provedor PIX
+
+Sem provedor, a ferramenta valida o formato mas não consulta o banco. Configure um dos dois:
+
+### Asaas (mais fácil)
+
+Crie conta grátis em asaas.com, vá em Configurações → Integrações → API Key e copie a chave que começa com `$aact_`. Cole nas Configurações da interface.
+
+### Efí Pay
+
+Crie conta em efipay.com.br, vá em API → Criar Aplicação e copie o Client ID e Client Secret. Cole nas Configurações da interface.
 
 ## Tecnologias
 
-Node.js com Express no backend e HTML/CSS/JS puro no frontend, sem frameworks.
+Node.js com Express, CORS habilitado, HTML/CSS/JS puro no frontend
 
 ## Feito por
 
