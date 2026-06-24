@@ -64,10 +64,13 @@ async function lookupWoovi(key, cfg) {
     { headers: { Authorization: cfg.appId } }
   );
 
-  const d = res.data?.pixKey || res.data;
+  const d = res.data;
   return {
     found: true,
-    bank: { name: null, ispb: null },
+    bank: {
+      name: null,
+      ispb: d.owner?.psp || null,
+    },
     holder: {
       name: d.owner?.name || null,
       document: d.owner?.taxID || null,
