@@ -55,10 +55,9 @@ async function lookupEfi(key, cfg) {
 }
 
 async function lookupWoovi(key, cfg) {
-  const res = await axios.post(
+  const res = await axios.get(
     `https://api.woovi.com/api/v1/pix-keys/${encodeURIComponent(key)}/check`,
-    {},
-    { headers: { Authorization: cfg.appId, 'Content-Type': 'application/json' } }
+    { headers: { Authorization: cfg.appId } }
   );
 
   const d = res.data?.pixKey || res.data;
